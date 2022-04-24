@@ -1,0 +1,94 @@
+# include <stdio.h>
+# include <stdlib.h>
+
+void print(int a[], int);
+
+void main()
+{
+    int a[] = {5, 10, 3, 8, 4, 7, 2, 1, 6, 9};
+    int n = 10;
+    print(a, n);
+
+    //sort
+    
+
+    print(a, n);
+}
+
+void print(int a[], int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d ", a[i]);
+    }
+    printf("\n");
+}
+
+/*
+bubble sort
+    int temp;
+    for (int i = 0; i < n - 1; i++)
+    {
+        for (int j = 0; j < n - i - 1; j++)
+        {
+            if (a[j+1] < a[j])
+                {
+                    temp = a[j+1];
+                    a[j+1] = a[j];
+                    a[j] = temp;
+                }
+        }
+    }
+
+*/
+
+/*
+selection sort
+    int pos, temp;
+    for (int i = 0; i < n - 1; i++)
+    {
+        pos = i;
+        for (int j = i + 1; j < n; j++)
+        {
+            if (a[j] < a[pos])
+                pos = j;
+        }
+        temp = a[pos];
+        a[pos] = a[i];
+        a[i] = temp;
+    }
+
+*/
+
+/*
+insertion sort
+    int curr, j;
+    for (int i = 1; i < n; i++)
+    {
+        curr = a[i];
+        for (j = i - 1; j >= 0 && a[j] > curr; j--)
+        {
+            a[j+1] = a[j];
+        }
+        a[j+1] = curr;
+    }
+
+*/
+
+/*
+shell sort
+    int i, j, gap, curr;
+    for (gap = n / 2; gap > 0; gap /= 2)
+    {
+        for (i = gap; i < n; i++)
+        {
+            curr = a[i];
+            for (j = i; j - gap >= 0 && a[j - gap] > curr; j-= gap)
+            {
+                a[j] = a[j-gap];
+            }
+            a[j] = curr;
+        }
+    }
+    
+*/

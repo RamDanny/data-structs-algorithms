@@ -1,0 +1,112 @@
+/*
+struct bst
+{
+	int data;
+	struct bst *left;
+	struct bst *right;
+};
+
+struct bst *insert(struct bst *t, int x);
+
+struct bst *tdelete(struct bst *t, int x);
+
+void inorder(struct bst *t);
+
+struct bst *find();
+
+struct bst *findmin();
+
+*/
+
+/*
+# include "adt.h"
+# include <stdio.h>
+# include <stdlib.h>
+
+struct bst *insert(struct bst *t, int x)
+{
+	if (t == NULL)
+	{
+		t = (struct bst *)malloc(sizeof(struct bst));
+		t->data = x;
+		t->left = NULL;
+		t->right = NULL;
+	}
+	else if (x < t->data)
+	{
+		t->left = insert(t->left, x);
+	}
+	else if (x > t->data)
+	{
+		t->right = insert(t->right, x);
+	}
+	return t;
+}
+
+struct bst *findmin(struct bst *t)
+{
+	if (t == NULL)
+	{
+		return t;
+	}
+	while (t->left != NULL)
+	{
+		return findmin(t->left);
+	}
+	return t;
+}
+
+struct bst *tdelete(struct bst *t, int x)
+{
+	struct bst *temp;
+	if (x < t->data)
+	{
+		t->left = tdelete(t->left, x);
+	}
+	else if (x > t->data)
+	{
+		t->right = tdelete(t->right, x);
+	}
+	else if (t->left && t->right)
+	{
+		temp = findmin(t->right);
+		t->data = temp->data;
+		t->right = tdelete(t->right, t->data);
+	}
+	else
+	{
+		temp = t;
+		if (t->right == NULL)
+		{
+			t = t->left;
+		}
+		if (t->left == NULL)
+		{
+			t = t->right;
+		}
+		free(temp);
+		return t;
+	}
+}
+
+void inorder(struct bst *t)
+{
+	if (t->left != NULL)
+		inorder(t->left);
+	printf("%d ", t->data);
+	if (t->right != NULL)
+		inorder(t->right);
+}
+
+struct bst *find(struct bst *t, int x)
+{
+	if (t == NULL)
+		return NULL;
+	else if (x == t->data)
+		return t;
+	else if (x < t->data)
+		return find(t->left, x);
+	else if (x > t->data)
+		return find(t->right, x);
+}
+*/

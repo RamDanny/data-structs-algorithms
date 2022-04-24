@@ -1,0 +1,355 @@
+/*
+struct tree
+{
+    int data;
+    int ht;
+    struct tree *left, *right;
+};
+
+int height(struct tree *t);
+
+struct tree *rotLtoR(struct tree *t);
+
+struct tree *rotRtoL(struct tree *t);
+
+struct tree *insert(struct tree *t, int x);
+
+void inorder(struct tree *t);
+
+void printLevel(struct tree *t, int h);
+
+void levelOrder(struct tree *t);
+
+*/
+/*
+# include "adt.h"
+# include <stdio.h>
+# include <stdlib.h>
+
+int max(int a, int b)
+{
+    return a > b ? a : b;
+}
+
+// height of tree
+int height(struct tree *t)
+{
+    if (t == NULL)
+    {
+        return 0;
+    }
+    int lt = height(t->left);
+    int rt = height(t->right);
+    return lt > rt ? lt+1 : rt+1;
+}
+
+struct tree *rotLtoR(struct tree *y)
+{
+    struct tree *x = y->left;
+    struct tree *t2 = x->right;
+    x->right = y;
+    y->left = t2;
+    y->ht = max(height(y->left), height(y->right)) + 1;
+    x->ht = max(height(x->left), height(x->right)) + 1;
+    return x;
+}
+
+struct tree *rotRtoL(struct tree *y)
+{
+    struct tree *x = y->right;
+    struct tree *t1 = x->left;
+    x->left = y;
+    y->right = t1;
+    y->ht = max(height(y->left), height(y->right)) + 1;
+    x->ht = max(height(x->left), height(x->right)) + 1;
+    return x;
+}
+
+// finds ht diff bw subtrees
+int balfac(struct tree *t)
+{
+    if (t == NULL)
+        return 0;
+    return height(t->left) - height(t->right);
+}
+
+struct tree *insert(struct tree *t, int x)
+{
+    // normal bst insert
+    struct tree *temp = (struct tree *)malloc(sizeof(struct tree));
+    temp->data = x;
+    temp->left = NULL;
+    temp->right = NULL;
+    temp->ht = 1;
+
+    if (t == NULL)
+    {
+        t = temp;
+        return t;
+    }
+
+    if (x < t->data)
+    {
+        t->left = insert(t->left, x);
+    }
+    else if (x > t->data)
+    {
+        t->right = insert(t->right, x);
+    }
+    else
+        return temp;
+    t->ht = max(height(t->left), height(t->right)) + 1;
+    // calc where to balance
+    int bf = balfac(t);
+    // left of left
+    if (bf > 1 && x < t->left->data)
+    {
+        return rotLtoR(t);
+    }
+    // right of right
+    if (bf < -1 && x > t->right->data)
+    {
+        return rotRtoL(t);
+    }
+    // right of left
+    if (bf > 1 && x > t->left->data)
+    {
+        t->left = rotRtoL(t->left);
+        return rotLtoR(t);
+    }
+    // left of right
+    if (bf > 1 && x < t->left->data)
+    {
+        t->right = rotLtoR(t->left);
+        return rotRtoL(t);
+    }
+    // if no rotation needed i.e. already balanced
+    return t;
+}
+
+void inorder(struct tree *t)
+{
+    if (t->left != NULL)
+        inorder(t->left);
+    printf("%d ", t->data, t->ht);
+    if (t->right != NULL)
+        inorder(t->right);
+}
+
+void printLevel(struct tree *t, int h)
+{
+    if (t == NULL)
+        return;
+    if (t->left != NULL)
+        printLevel(t->left, h-1);
+    if (h == 1)
+        printf("%d ", t->data);
+    if (t->right != NULL)
+        printLevel(t->right, h-1);
+}
+
+void levelOrder(struct tree *t)
+{
+    if (t == NULL)
+        return;
+    for (int i = 1; i <= height(t); i++)
+    {
+        printLevel(t, i);
+        printf("\n");
+    }
+    printf("\n");
+}
+
+struct tree *findmin(struct tree *t)
+{
+    struct tree *temp;
+    while (t->left != NULL)
+        temp = t->left;
+    return temp;
+}
+
+struct tree *delete(struct tree *t, int x)
+{
+	// STEP 1: PERFORM STANDARD BST DELETE
+
+	if (t == NULL)
+		return t;
+
+	// If the x to be deleted is smaller than the
+	// t's x, then it lies in left subtree
+	if ( x < t->data )
+		t->left = delete(t->left, x);
+
+	// If the x to be deleted is greater than the
+	// t's x, then it lies in right subtree
+	else if( x > t->data )
+		t->right = delete(t->right, x);
+
+	// if x is same as t's x, then This is
+	// the node to be deleted
+	else
+	{
+		// node with only one child or no child
+		if( (t->left == NULL) || (t->right == NULL) )
+		{
+			struct tree *temp = t->left ? t->left :
+											t->right;
+
+			// No child case
+			if (temp == NULL)
+			{
+				temp = t;
+				t = NULL;
+			}
+			else // One child case
+			*t = *temp; // Copy the contents of
+							// the non-empty child
+			free(temp);
+		}
+		else
+		{
+			// node with two children: Get the inorder
+			// successor (smallest in the right subtree)
+			struct tree* temp = findmin(t->right);
+
+			// Copy the inorder successor's data to this node
+			t->data = temp->data;
+
+			// Delete the inorder successor
+			t->right = delete(t->right, temp->data);
+		}
+	}
+
+	// If the tree had only one node then return
+	if (t == NULL)
+	return t;
+
+	// STEP 2: UPDATE HEIGHT OF THE CURRENT NODE
+	t->ht = 1 + max(height(t->left),
+						height(t->right));
+
+	// STEP 3: GET THE BALANCE FACTOR OF THIS NODE (to
+	// check whether this node became unbalanced)
+	int bf = balfac(t);
+
+	// If this node becomes unbalanced, then there are 4 cases
+
+	// Left Left Case
+	if (bf > 1 && balfac(t->left) >= 0)
+		return rotLtoR(t);
+
+	// Left Right Case
+	if (bf > 1 && balfac(t->left) < 0)
+	{
+		t->left = rotRtoL(t->left);
+		return rotLtoR(t);
+	}
+
+	// Right Right Case
+	if (bf < -1 && balfac(t->right) <= 0)
+		return rotRtoL(t);
+
+	// Right Left Case
+	if (bf < -1 && balfac(t->right) > 0)
+	{
+		t->right = rotLtoR(t->right);
+		return rotRtoL(t);
+	}
+
+	return t;
+}
+
+/*
+struct tree *delete(struct tree *t, int x)
+{
+    struct tree *temp;
+    if (x < t->data)
+        t->left = delete(t->left, x);
+    else if (x > t->data)
+        t->right = delete(t->right, x);
+    else
+	{
+		// node with only one child or no child
+		if( (t->left == NULL) || (t->right == NULL) )
+		{
+			struct tree *temp = t->left ? t->left : t->right;
+
+			// No child case
+			if (temp == NULL)
+			{
+				temp = t;
+				t = NULL;
+			}
+			else // One child case
+			*t = *temp; // Copy the contents of
+							// the non-empty child
+			free(temp);
+		}
+		else
+		{
+			// node with two children: Get the inorder
+			// successor (smallest in the right subtree)
+			struct tree* temp = findmin(t->right);
+
+			// Copy the inorder successor's data to this node
+			t->data = temp->data;
+
+			// Delete the inorder successor
+			t->right = delete(t->right, temp->data);
+		}
+	}
+
+	// If the tree had only one node then return
+	if (t == NULL)
+	return t;
+    
+    t->ht = max(height(t->left), height(t->right)) + 1;
+
+    // calc where to balance
+    int bf = balfac(t);
+    // left of left
+    if (bf > 1 && balfac(t->left) >= 0)
+    {
+        return rotLtoR(t);
+    }
+    // right of right
+    if (bf < -1 && balfac(t->right) <= 0)
+    {
+        return rotRtoL(t);
+    }
+    // right of left
+    if (bf > 1 && balfac(t->left) < 0)
+    {
+        t->left = rotRtoL(t->left);
+        return rotLtoR(t);
+    }
+    // left of right
+    if (bf < -1 && balfac(t->right) > 0)
+    {
+        t->right = rotLtoR(t->left);
+        return rotRtoL(t);
+    }
+    // if no rotation needed i.e. already balanced
+    return t;
+}
+*/
+
+*/
+/*
+# include "impl.h"
+
+void main()
+{
+    struct tree *t = NULL;
+    t = insert(t, 10);
+    t = insert(t, 15);
+    t = insert(t, 8);
+    t = insert(t, 4);
+    t = insert(t, 2);
+    t = insert(t, 18);
+    t = insert(t, 20);
+    inorder(t);
+    printf("\n");
+    levelOrder(t);
+}
+*/
