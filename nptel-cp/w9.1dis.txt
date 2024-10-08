@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+bool bpm(vector<vector<int>>&vec, int u,bool vis[], int match[],int n)
+{
+    for (auto v:vec[u])
+    {
+        if (!vis[v])
+        {
+            vis[v]=true;
+            if (match[v]<0 || bpm(vec,match[v],vis,match,n))
+            {
+                match[v]=u;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+int maxmatch(vector<vector<int>>&vec,int k,int n)
+{
+    int match[2*n];
+    memset(match, -1, sizeof(match));
+    int result=0;
+    for (int u=0; u<n; u++)
+    {
+        bool vis[2*n];
+        memset(vis, 0, sizeof(vis));
+
+        if (bpm(vec, u, vis, match,n))
+            result++;
+    }
+    return result>=n-k ? 1 : 0;
+}
+int main()
+{
+    int n,m,k;
+	cin>>n>>m;
+	cin>>k;
+	vector<vector<int>>adj(n);
+	for(int i=0;i<m;i++){
+		int u,v;
+		cin>>u>>v;
+		adj[u-1].push_back(v-1);
+	}
+	vector<vector<int>>adjd(2*n);
+	for(int i=0;i<n;i++){
+		for(auto j:adj[i]){
+			adjd[i].push_back(n+j);
+			adjd[n+j].push_back(i);
+		}
+	}
+	cout<<(maxmatch(adjd,k,n)==1 ? "YES" : "NO")<<endl;
+    return 0;
+}
