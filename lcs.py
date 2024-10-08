@@ -1,3 +1,4 @@
+# Find the longest common subsequence of 2 strings
 def lcs(string1, string2):
     #print(f'-{string1} {string2}-')
     if string1 == '' or string2 == '':
